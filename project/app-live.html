@@ -558,7 +558,7 @@ function StatusDetail({ d, stObj, total, title, showCleared, compact }) {
       </div>
       <div style={{ marginBottom: 14 }}><StatusBar st={stObj} total={total} height={12} /></div>
       <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 10, overflow: 'hidden' }}>
-        {STATUSES.map((s, i) => {
+        {STATUSES.filter((s) => (stObj[s.key] || 0) > 0).map((s, i) => {
           const v = stObj[s.key] || 0;
           const p = Math.round(v / total * 100);
           return (
