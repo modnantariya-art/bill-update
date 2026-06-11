@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เปรียบเทียบสถานะบิลคงค้าง · แนวออกแบบ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; }
+  * { -webkit-font-smoothing: antialiased; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="data.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel" src="directionA.jsx"></script>
+<script type="text/babel" src="directionB.jsx"></script>
+<script type="text/babel" src="directionC.jsx"></script>
+<script type="text/babel">
+  const { useState } = React;
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="a" title="แนวทาง A · สรุป KPI + รายการ DC"
+          subtitle="โล่ง เน้นตัวเลขใหญ่ — เปิดมาเห็นภาพรวมการเปลี่ยนแปลงทันที + รายการบิลที่หายไป">
+          <DCArtboard id="a-desk" label="A · Desktop" width={1440} height={980}><DesktopA /></DCArtboard>
+          <DCArtboard id="a-mob" label="A · Mobile" width={390} height={844}><MobileA /></DCArtboard>
+        </DCSection>
+
+        <DCSection id="b" title="แนวทาง B · ตารางเปรียบเทียบเข้ม"
+          subtitle="Data grid สำหรับผู้จัดการ — เห็นทุก DC พร้อมกัน ตั้งต้น / หาย / ใหม่ / ปัจจุบัน ในแถวเดียว">
+          <DCArtboard id="b-desk" label="B · Desktop" width={1440} height={1000}><DesktopB /></DCArtboard>
+          <DCArtboard id="b-mob" label="B · Mobile" width={390} height={844}><MobileB /></DCArtboard>
+        </DCSection>
+
+        <DCSection id="c" title="แนวทาง C · การ์ด DC"
+          subtitle="เน้นภาพ สแกนเร็ว — แต่ละ DC เป็นการ์ดมีแถบเทียบก่อน/หลังและสีบอกแนวโน้ม">
+          <DCArtboard id="c-desk" label="C · Desktop" width={1440} height={1040}><DesktopC /></DCArtboard>
+          <DCArtboard id="c-mob" label="C · Mobile" width={390} height={904}><MobileC /></DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
