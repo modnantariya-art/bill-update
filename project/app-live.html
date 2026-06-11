@@ -558,29 +558,57 @@ function StatusDetail({ d, stObj, total, title, showCleared, compact }) {
       </div>
       <div style={{ marginBottom: 14 }}><StatusBar st={stObj} total={total} height={12} /></div>
       <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 10, overflow: 'hidden' }}>
-        {STATUSES.filter((s) => (stObj[s.key] || 0) > 0).map((s, i) => {
-          const v = stObj[s.key] || 0;
-          const p = Math.round(v / total * 100);
+        {(() => {
+          const knownTotal = STATUSES.reduce((a, s) => a + (stObj[s.key] || 0), 0);
+          const otherCount = total - knownTotal;
+          const rows = STATUSES.filter((s) => (stObj[s.key] || 0) > 0);
           return (
-            <div key={s.key} style={{ display: 'grid', gridTemplateColumns: compact ? '1fr 64px' : '20px 1fr 220px 64px 56px', alignItems: 'center', gap: 12, padding: '11px 16px', borderTop: i ? `1px solid ${C.line2}` : 'none' }}>
-              {!compact && <span style={{ width: 11, height: 11, borderRadius: 3, background: s.color }} />}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {compact && <span style={{ width: 10, height: 10, borderRadius: 3, background: s.color, flex: '0 0 auto' }} />}
-                  <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.short}</span>
+            <React.Fragment>
+              {rows.map((s, i) => {
+                const v = stObj[s.key] || 0;
+                const p = Math.round(v / total * 100);
+                return (
+                  <div key={s.key} style={{ display: 'grid', gridTemplateColumns: compact ? '1fr 64px' : '20px 1fr 220px 64px 56px', alignItems: 'center', gap: 12, padding: '11px 16px', borderTop: i ? `1px solid ${C.line2}` : 'none' }}>
+                    {!compact && <span style={{ width: 11, height: 11, borderRadius: 3, background: s.color }} />}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {compact && <span style={{ width: 10, height: 10, borderRadius: 3, background: s.color, flex: '0 0 auto' }} />}
+                        <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.short}</span>
+                      </div>
+                      <span className="num" style={{ fontSize: 11, color: C.ink3 }}>{s.code}</span>
+                    </div>
+                    {!compact &&
+                      <div style={{ height: 6, background: C.line2, borderRadius: 99, overflow: 'hidden' }}>
+                        <div style={{ width: `${p}%`, height: '100%', background: s.color, borderRadius: 99 }} />
+                      </div>
+                    }
+                    {!compact && <span className="num" style={{ textAlign: 'right', fontSize: 12.5, color: C.ink3 }}>{p}%</span>}
+                    <span className="num" style={{ textAlign: 'right', fontSize: 15, fontWeight: 600, color: C.ink }}>{fmt(v)}</span>
+                  </div>
+                );
+              })}
+              {otherCount > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: compact ? '1fr 64px' : '20px 1fr 220px 64px 56px', alignItems: 'center', gap: 12, padding: '11px 16px', borderTop: rows.length ? `1px solid ${C.line2}` : 'none' }}>
+                  {!compact && <span style={{ width: 11, height: 11, borderRadius: 3, background: C.ink3 }} />}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {compact && <span style={{ width: 10, height: 10, borderRadius: 3, background: C.ink3, flex: '0 0 auto' }} />}
+                      <span style={{ fontSize: 13.5, fontWeight: 600 }}>อื่นๆ</span>
+                    </div>
+                    <span className="num" style={{ fontSize: 11, color: C.ink3 }}>–</span>
+                  </div>
+                  {!compact &&
+                    <div style={{ height: 6, background: C.line2, borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.round(otherCount / total * 100)}%`, height: '100%', background: C.ink3, borderRadius: 99 }} />
+                    </div>
+                  }
+                  {!compact && <span className="num" style={{ textAlign: 'right', fontSize: 12.5, color: C.ink3 }}>{Math.round(otherCount / total * 100)}%</span>}
+                  <span className="num" style={{ textAlign: 'right', fontSize: 15, fontWeight: 600, color: C.ink }}>{fmt(otherCount)}</span>
                 </div>
-                <span className="num" style={{ fontSize: 11, color: C.ink3 }}>{s.code}</span>
-              </div>
-              {!compact &&
-                <div style={{ height: 6, background: C.line2, borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ width: `${p}%`, height: '100%', background: s.color, borderRadius: 99 }} />
-                </div>
-              }
-              {!compact && <span className="num" style={{ textAlign: 'right', fontSize: 12.5, color: C.ink3 }}>{p}%</span>}
-              <span className="num" style={{ textAlign: 'right', fontSize: 15, fontWeight: 600, color: v ? C.ink : C.ink3 }}>{fmt(v)}</span>
-            </div>
+              )}
+            </React.Fragment>
           );
-        })}
+        })()}
       </div>
     </div>
   );
