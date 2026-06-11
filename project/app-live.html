@@ -618,8 +618,9 @@ function StatusDetail({ d, stObj, otherDetails = {}, total, title, showCleared, 
                   {Object.keys(otherDetails).length > 0 && (
                     <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 5, paddingLeft: compact ? 0 : 23 }}>
                       {Object.entries(otherDetails).sort((a, b) => b[1] - a[1]).map(([k, v]) => (
-                        <span key={k} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 99, background: C.surface2, border: `1px solid ${C.line}`, color: C.ink2 }}>
-                          {k} · <span className="num" style={{ fontWeight: 600 }}>{v}</span>
+                        <span key={k} title={k} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 99, background: C.surface2, border: `1px solid ${C.line}`, color: C.ink2, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{k.length > 30 ? k.slice(0, 30) + '…' : k}</span>
+                          <span className="num" style={{ fontWeight: 600, flex: '0 0 auto' }}>· {v}</span>
                         </span>
                       ))}
                     </div>
