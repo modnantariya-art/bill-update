@@ -62,7 +62,6 @@
           while (i < line.length && line[i] !== ',') i++;
           cells.push(line.slice(s, i));
           if (i < line.length) i++;
-          else if (i === line.length && line[line.length - 1] === ',') cells.push('');
           else break;
         }
       }
