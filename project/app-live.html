@@ -160,7 +160,16 @@
           byType.all.cleared++; byType[tkey].cleared++;
         } else {
           byType.all.remaining++; byType[tkey].remaining++;
-          var sk = (statusByCode[cur.status] ? statusByCode[cur.status].key : 'other');
+          var rawSt = cur.status || '';
+          var sk = 'other';
+          if (statusByCode[rawSt]) {
+            sk = statusByCode[rawSt].key;
+          } else {
+            var codeKeys = Object.keys(statusByCode);
+            for (var cki = 0; cki < codeKeys.length; cki++) {
+              if (rawSt.indexOf(codeKeys[cki]) === 0) { sk = statusByCode[codeKeys[cki]].key; break; }
+            }
+          }
           byType.all.st[sk] = (byType.all.st[sk] || 0) + 1;
           byType[tkey].st[sk] = (byType[tkey].st[sk] || 0) + 1;
         }
@@ -483,7 +492,9 @@ function SyncChip() {
   );
 }
 
-Object.assign(window, { C, fmt, pct, DeltaPill, CompareBars, DCBadge, SnapChip, SyncChip });
+const dcLabel = (name) => (name || '').replace(/^\d+\s+/, '');
+
+Object.assign(window, { C, fmt, pct, DeltaPill, CompareBars, DCBadge, SnapChip, SyncChip, dcLabel });
 </script>
 
 <!-- directionB2.jsx — main app components -->
@@ -540,7 +551,7 @@ function StatusDetail({ d, stObj, total, title, showCleared, compact }) {
   return (
     <div style={{ background: 'linear-gradient(180deg,#f7faff,#fff)', borderBottom: `2px solid ${C.blueEdge}`, padding: compact ? '12px 16px 14px' : '16px 24px 18px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 13.5, fontWeight: 700 }}>{title} · {d.code} {d.name}</span>
+        <span style={{ fontSize: 13.5, fontWeight: 700 }}>{title} · {dcLabel(d.name)}</span>
         <span className="num" style={{ fontSize: 12, fontWeight: 700, color: C.blue, background: C.blueSoft, borderRadius: 99, padding: '2px 9px' }}>{fmt(total)} บิล</span>
         {showCleared && <span style={{ fontSize: 12, color: C.ink3 }}>· เคลียร์แล้ว {fmt(d.cleared)} ({clrPct(d)}%)</span>}
         {failTotal > 0 && <span style={{ fontSize: 12, fontWeight: 600, color: C.red, background: C.redSoft, borderRadius: 99, padding: '2px 9px' }}>ส่งไม่ได้ {fmt(failTotal)} บิล</span>}
@@ -719,7 +730,7 @@ function CompareDesktop() {
             return (
               <React.Fragment key={d.code}>
                 <tr onClick={() => setOpen(isOpen ? null : d.code)} style={{ borderBottom: `1px solid ${C.line2}`, background: isOpen ? C.blueSoft : i % 2 ? C.surface2 : C.surface, cursor: 'pointer' }}>
-                  <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 600 }}>{d.name}</td>
+                  <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 600 }}>{dcLabel(d.name)}</td>
                   <TdNum color={C.ink3}>{fmt(t.baseline)}</TdNum>
                   <TdNum color={C.green} bold sub={`${clr}%`}>−{fmt(t.cleared)}</TdNum>
                   <TdNum color={C.blue} bold>{fmt(t.remaining)}</TdNum>
@@ -813,7 +824,7 @@ function CurrentDesktop() {
               const rt = prow(row, ptype);
               return (
                 <tr key={row.code} style={{ borderBottom: `1px solid ${C.line2}`, background: i % 2 ? C.surface2 : C.surface }}>
-                  <td style={{ padding: '10px 16px', fontSize: 14, fontWeight: 600 }}>{row.name}</td>
+                  <td style={{ padding: '10px 16px', fontSize: 14, fontWeight: 600 }}>{dcLabel(row.name)}</td>
                   {row.cells.map((cell, ci) => {
                     const v = pcell(cell, ptype);
                     return <td key={ci} className="num" style={{ textAlign: 'right', padding: '10px 16px', fontSize: 13.5, color: v ? C.ink2 : C.line }}>{v ? fmt(v) : '·'}</td>;
@@ -891,7 +902,7 @@ function CurrentMobile() {
       {filtered.map((d, ri) => (
         <div key={d.code} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 40px)', alignItems: 'center', padding: '9px 12px', background: ri % 2 ? C.surface2 : C.surface, borderBottom: `1px solid ${C.line2}` }}>
           <div style={{ minWidth: 0, paddingRight: 6 }}>
-            <div style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.name}</div>
+            <div style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dcLabel(d.name)}</div>
             <div style={{ fontSize: 10.5, color: C.ink3, marginTop: 2, whiteSpace: 'nowrap' }}>
               เก่าสุด <span className="num" style={{ color: C.ink2, fontWeight: 600 }}>{d.oldest || '–'}</span>
               {' · '}รวม <span className="num" style={{ color: C.blue, fontWeight: 700 }}>{fmt(d.tot)}</span>
@@ -1006,7 +1017,7 @@ function MobileTable() {
         return (
           <div key={d.code}>
             <div onClick={() => setOpen(isOpen ? null : d.code)} style={{ display: 'grid', gridTemplateColumns: '1fr 72px 72px 16px', gap: 6, alignItems: 'center', padding: '11px 16px', background: isOpen ? C.blueSoft : i % 2 ? C.surface2 : C.surface, borderBottom: `1px solid ${C.line2}` }}>
-              <span style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dcLabel(d.name)}</span>
               <span className="num" style={{ textAlign: 'right', fontSize: 13.5, color: C.green, fontWeight: 600 }}>−{fmt(d.cleared)}</span>
               <span className="num" style={{ textAlign: 'right', fontSize: 13.5, color: C.blue, fontWeight: 600 }}>{fmt(d.remaining)}</span>
               <span style={{ textAlign: 'center', color: C.ink3, transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform .15s' }}>›</span>
